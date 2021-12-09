@@ -1,24 +1,36 @@
-const express = require('express');
+//importaciones
+
+const express = require("express");
 const app = express();
 const fs = require("fs");
-const multer = require('multer');
-const { TesseractWorker } = require('tesseract.js');
-
-const worker = new TesseractWorker();
-
+const multer = require("multer");
+const { createWorker } = require("tesseract.js");
+const worker = createWorker();
+//almacenamiento de imagenes
 const storage = multer.diskStorage({
-    destination:(req, file, cb) => {
-        cb(null,"./uploads");
-    },
-    filename:(req, file, cb) => {
-        cb(null,req.file);
+    destination: (req, res, cb) =>{
+        cb(null, './uploads');
     }
 });
 
-
-const uploads = multer({storage:storage}).single("avatar");
+const upload = multer({storage: storage}).single("tanjiro");
 app.set("view engine", "ejs");
 
-//Iniciar Servidor
+
+//rutas
+app.get("/", (req, res) =>{
+    res.render("index");
+});
+
+app.post("/upload", (req, res) =>{
+    upload(req,res,err =>{
+        console.log(req.file);
+    })
+});
+
+//iniciar servidor
 const PORT = 5000 || process.env.PORT;
-app.listen(PORT, () => console.log('Hey funciono!!!'));
+
+app.listen(PORT, () => {
+    console.log(`Servidor funcionando en el puerto ${PORT}`);
+});
